@@ -4,1049 +4,127 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
-    <title>Weekly MC</title>
-    <meta name="color-scheme" content="dark light" />
-
-    <style>
-        :root {
-            --bg0: #070A12;
-            --bg1: #0B1530;
-            --glass: rgba(255, 255, 255, .08);
-            --glass2: rgba(255, 255, 255, .14);
-            --stroke: rgba(255, 255, 255, .14);
-            --text: rgba(255, 255, 255, .92);
-            --muted: rgba(255, 255, 255, .65);
-            --shadow: 0 24px 80px rgba(0, 0, 0, .55);
-            --shadow2: 0 12px 30px rgba(0, 0, 0, .35);
-            --radius: 22px;
-            --accent: #7C5CFF;
-            --accent2: #00E5FF;
-            --danger: #FF4D7D;
-        }
-
-        * {
-            box-sizing: border-box
-        }
-
-        html,
-        body {
-            height: 100%
-        }
-
-        body {
-            margin: 0;
-            font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, "Apple SD Gothic Neo", "Noto Sans KR", Helvetica, Arial, "Segoe UI Emoji";
-            color: var(--text);
-            overflow: hidden;
-            background:
-                radial-gradient(1200px 800px at 20% 10%, rgba(124, 92, 255, .22), transparent 55%),
-                radial-gradient(900px 700px at 80% 20%, rgba(0, 229, 255, .18), transparent 50%),
-                radial-gradient(1200px 900px at 50% 110%, rgba(255, 0, 128, .10), transparent 55%),
-                linear-gradient(160deg, var(--bg0), var(--bg1));
-        }
-
-        body:before {
-            content: "";
-            position: fixed;
-            inset: 0;
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23n)' opacity='.18'/%3E%3C/svg%3E");
-            mix-blend-mode: overlay;
-            opacity: .32;
-            pointer-events: none;
-        }
-
-        .app {
-            height: 100%;
-            display: flex;
-            flex-direction: column;
-            padding: 22px 18px 18px;
-            gap: 14px;
-        }
-
-        header {
-            display: flex;
-            align-items: flex-start;
-            justify-content: space-between;
-            gap: 12px;
-        }
-
-        .title-wrap {
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
-            min-width: 0;
-        }
-
-        .badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            width: max-content;
-            padding: 7px 10px;
-            border-radius: 999px;
-            background: linear-gradient(135deg, rgba(124, 92, 255, .18), rgba(0, 229, 255, .12));
-            border: 1px solid rgba(255, 255, 255, .12);
-            box-shadow: var(--shadow2);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            font-size: 12px;
-            color: var(--muted);
-        }
-
-        h1 {
-            margin: 0;
-            font-size: 22px;
-            letter-spacing: -.3px;
-            line-height: 1.1;
-            text-shadow: 0 8px 30px rgba(0, 0, 0, .4);
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            max-width: 72vw;
-        }
-
-        .sub {
-            margin: 0;
-            color: var(--muted);
-            font-size: 13px;
-            line-height: 1.3;
-            max-width: 72vw;
-        }
-
-        .actions {
-            display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
-            justify-content: flex-end;
-        }
-
-        button {
-            appearance: none;
-            border: none;
-            cursor: pointer;
-            color: var(--text);
-            background: rgba(255, 255, 255, .08);
-            border: 1px solid rgba(255, 255, 255, .12);
-            border-radius: 14px;
-            padding: 10px 12px;
-            font-size: 13px;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            box-shadow: var(--shadow2);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            transition: transform .12s ease, background .12s ease, border-color .12s ease;
-            user-select: none;
-        }
-
-        button:hover {
-            transform: translateY(-1px);
-            background: rgba(255, 255, 255, .10);
-            border-color: rgba(255, 255, 255, .18);
-        }
-
-        button:active {
-            transform: translateY(0px) scale(.99);
-        }
-
-        button:disabled {
-            opacity: .55;
-            cursor: not-allowed;
-        }
-
-        .primary {
-            background: linear-gradient(135deg, rgba(124, 92, 255, .28), rgba(0, 229, 255, .18));
-            border-color: rgba(255, 255, 255, .18);
-        }
-
-        main {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            gap: 14px;
-            min-height: 0;
-        }
-
-        .stage {
-            position: relative;
-            flex: 1;
-            min-height: 0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            overflow: hidden;
-            border-radius: 26px;
-            background: linear-gradient(180deg, rgba(255, 255, 255, .04), rgba(255, 255, 255, .02));
-            border: 1px solid rgba(255, 255, 255, .08);
-            box-shadow: var(--shadow);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
-        }
-
-        .status {
-            position: absolute;
-            top: 10px;
-            left: 50%;
-            transform: translateX(-50%);
-            padding: 9px 12px;
-            border-radius: 999px;
-            font-size: 12px;
-            background: rgba(0, 0, 0, .28);
-            border: 1px solid rgba(255, 255, 255, .12);
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
-            color: rgba(255, 255, 255, .72);
-            display: none;
-            z-index: 10;
-            max-width: 94vw;
-            text-align: center;
-        }
-
-        .status.show {
-            display: block;
-        }
-
-        /* Only ONE card shown */
-        .single {
-            width: min(86vw, 440px);
-            height: min(64vh, 540px);
-            perspective: 1200px;
-            transform-style: preserve-3d;
-            user-select: none;
-        }
-
-        .card {
-            width: 100%;
-            height: 100%;
-            border-radius: var(--radius);
-            background:
-                radial-gradient(900px 420px at 20% 15%, rgba(124, 92, 255, .25), transparent 45%),
-                radial-gradient(700px 360px at 85% 30%, rgba(0, 229, 255, .20), transparent 45%),
-                linear-gradient(180deg, rgba(255, 255, 255, .10), rgba(255, 255, 255, .05));
-            border: 1px solid rgba(255, 255, 255, .14);
-            box-shadow: 0 35px 120px rgba(0, 0, 0, .55);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
-            transform-style: preserve-3d;
-            transition: transform 420ms cubic-bezier(.2, .9, .2, 1), opacity 220ms ease;
-            will-change: transform, opacity;
-            cursor: pointer;
-            position: relative;
-        }
-
-        .card::before {
-            content: "";
-            position: absolute;
-            inset: -2px;
-            background: linear-gradient(120deg, rgba(124, 92, 255, .0), rgba(124, 92, 255, .18), rgba(0, 229, 255, .16), rgba(255, 0, 128, .10), rgba(124, 92, 255, .0));
-            filter: blur(10px);
-            opacity: .55;
-            transform: translateZ(-1px);
-            pointer-events: none;
-        }
-
-        .card-header {
-            padding: 18px 18px 12px;
-            display: flex;
-            align-items: flex-start;
-            justify-content: space-between;
-            gap: 10px;
-            position: relative;
-            z-index: 2;
-        }
-
-        .chip {
-            font-size: 12px;
-            padding: 7px 10px;
-            border-radius: 999px;
-            border: 1px solid rgba(255, 255, 255, .14);
-            background: rgba(0, 0, 0, .18);
-            color: rgba(255, 255, 255, .78);
-            white-space: nowrap;
-        }
-
-        .date {
-            font-size: 12px;
-            color: rgba(255, 255, 255, .68);
-            white-space: nowrap;
-        }
-
-        .card-body {
-            padding: 4px 18px 16px;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            position: relative;
-            z-index: 2;
-            flex: 1;
-        }
-
-        .name {
-            font-size: 30px;
-            letter-spacing: -.6px;
-            margin: 0;
-            line-height: 1.05;
-            text-shadow: 0 10px 35px rgba(0, 0, 0, .35);
-        }
-
-        .type {
-            margin: 0;
-            color: rgba(255, 255, 255, .75);
-            font-size: 14px;
-            line-height: 1.4;
-        }
-
-        .cta {
-            margin-top: auto;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 10px;
-            padding-top: 12px;
-            border-top: 1px solid rgba(255, 255, 255, .10);
-            color: rgba(255, 255, 255, .72);
-            font-size: 13px;
-        }
-
-        .arrow {
-            width: 34px;
-            height: 34px;
-            border-radius: 12px;
-            display: grid;
-            place-items: center;
-            background: rgba(255, 255, 255, .08);
-            border: 1px solid rgba(255, 255, 255, .12);
-            box-shadow: 0 12px 26px rgba(0, 0, 0, .25);
-            transform: translateZ(8px);
-        }
-
-        .footer {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 12px;
-            padding: 10px 4px 0;
-            color: rgba(255, 255, 255, .62);
-            font-size: 12px;
-        }
-
-        .footer .muted {
-            color: rgba(255, 255, 255, .62);
-        }
-
-        /* Right sidebar (drawer) */
-        .drawer-backdrop {
-            position: fixed;
-            inset: 0;
-            background: rgba(0, 0, 0, .45);
-            display: none;
-            z-index: 40;
-        }
-
-        .drawer-backdrop.show {
-            display: block;
-        }
-
-        .drawer {
-            position: fixed;
-            top: 0;
-            right: 0;
-            height: 100%;
-            width: min(420px, 92vw);
-            background: linear-gradient(180deg, rgba(255, 255, 255, .10), rgba(255, 255, 255, .06));
-            border-left: 1px solid rgba(255, 255, 255, .14);
-            box-shadow: var(--shadow);
-            backdrop-filter: blur(18px);
-            -webkit-backdrop-filter: blur(18px);
-            transform: translateX(102%);
-            transition: transform .22s ease;
-            z-index: 45;
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
-        }
-
-        .drawer.show {
-            transform: translateX(0);
-        }
-
-        .drawer-head {
-            display: flex;
-            align-items: flex-start;
-            justify-content: space-between;
-            gap: 10px;
-            padding: 16px 16px 12px;
-            border-bottom: 1px solid rgba(255, 255, 255, .10);
-        }
-
-        .drawer-title {
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
-            min-width: 0;
-        }
-
-        .drawer-title h2 {
-            margin: 0;
-            font-size: 16px;
-            letter-spacing: -.2px;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-
-        .drawer-title p {
-            margin: 0;
-            color: rgba(255, 255, 255, .65);
-            font-size: 12px;
-        }
-
-        .icon-btn {
-            width: 38px;
-            height: 38px;
-            border-radius: 14px;
-            display: grid;
-            place-items: center;
-            padding: 0;
-        }
-
-        .drawer-body {
-            padding: 10px 10px 14px;
-            overflow: auto;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
-
-        .search {
-            display: flex;
-            gap: 10px;
-            padding: 0 6px;
-            align-items: center;
-        }
-
-        .search input {
-            width: 100%;
-            padding: 10px 12px;
-            border-radius: 14px;
-            border: 1px solid rgba(255, 255, 255, .14);
-            background: rgba(0, 0, 0, .18);
-            color: var(--text);
-            outline: none;
-            font-size: 13px;
-        }
-
-        .search input:focus {
-            border-color: rgba(124, 92, 255, .55);
-            box-shadow: 0 0 0 4px rgba(124, 92, 255, .18);
-        }
-
-        .list {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            padding: 0 6px 8px;
-        }
-
-        .row {
-            padding: 12px 12px;
-            border-radius: 16px;
-            border: 1px solid rgba(255, 255, 255, .12);
-            background: rgba(255, 255, 255, .06);
-            cursor: pointer;
-            transition: transform .12s ease, background .12s ease, border-color .12s ease;
-            display: flex;
-            gap: 10px;
-            align-items: flex-start;
-            justify-content: space-between;
-        }
-
-        .row:hover {
-            transform: translateY(-1px);
-            background: rgba(255, 255, 255, .08);
-            border-color: rgba(255, 255, 255, .18);
-        }
-
-        .row.active {
-            background: linear-gradient(135deg, rgba(124, 92, 255, .22), rgba(0, 229, 255, .12));
-            border-color: rgba(255, 255, 255, .22);
-        }
-
-        .row-left {
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
-            min-width: 0;
-        }
-
-        .row-top {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            flex-wrap: wrap;
-            color: rgba(255, 255, 255, .85);
-            font-size: 13px;
-        }
-
-        .pill {
-            font-size: 11px;
-            padding: 5px 8px;
-            border-radius: 999px;
-            border: 1px solid rgba(255, 255, 255, .14);
-            background: rgba(0, 0, 0, .18);
-            color: rgba(255, 255, 255, .74);
-            white-space: nowrap;
-        }
-
-        .row-name {
-            font-size: 14px;
-            font-weight: 700;
-            letter-spacing: -.2px;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-
-        .row-type {
-            font-size: 12px;
-            color: rgba(255, 255, 255, .66);
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            max-width: 280px;
-        }
-
-        /* modal */
-        .modal-backdrop {
-            position: fixed;
-            inset: 0;
-            background: rgba(0, 0, 0, .55);
-            display: none;
-            align-items: center;
-            justify-content: center;
-            padding: 18px;
-            z-index: 60;
-        }
-
-        .modal-backdrop.show {
-            display: flex;
-        }
-
-        .modal {
-            width: min(640px, 96vw);
-            border-radius: 22px;
-            background: linear-gradient(180deg, rgba(255, 255, 255, .10), rgba(255, 255, 255, .06));
-            border: 1px solid rgba(255, 255, 255, .14);
-            box-shadow: var(--shadow);
-            backdrop-filter: blur(18px);
-            -webkit-backdrop-filter: blur(18px);
-            overflow: hidden;
-            animation: pop .16s ease-out both;
-        }
-
-        @keyframes pop {
-            from {
-                transform: translateY(14px) scale(.98);
-                opacity: .0
-            }
-
-            to {
-                transform: translateY(0) scale(1);
-                opacity: 1
-            }
-        }
-
-        .modal-head {
-            display: flex;
-            align-items: flex-start;
-            justify-content: space-between;
-            gap: 10px;
-            padding: 16px 16px 10px;
-            border-bottom: 1px solid rgba(255, 255, 255, .10);
-        }
-
-        .modal-title {
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
-            min-width: 0;
-        }
-
-        .modal-title h2 {
-            margin: 0;
-            font-size: 16px;
-            letter-spacing: -.2px;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-
-        .modal-title p {
-            margin: 0;
-            color: rgba(255, 255, 255, .65);
-            font-size: 12px;
-        }
-
-        .modal-body {
-            padding: 14px 16px 16px;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
-
-        textarea {
-            width: 100%;
-            min-height: 120px;
-            resize: vertical;
-            border-radius: 16px;
-            border: 1px solid rgba(255, 255, 255, .14);
-            background: rgba(0, 0, 0, .18);
-            color: var(--text);
-            padding: 12px 12px;
-            outline: none;
-            font-size: 14px;
-            line-height: 1.5;
-        }
-
-        textarea:focus {
-            border-color: rgba(124, 92, 255, .55);
-            box-shadow: 0 0 0 4px rgba(124, 92, 255, .18);
-        }
-
-        .modal-actions {
-            display: flex;
-            justify-content: flex-end;
-            gap: 10px;
-            flex-wrap: wrap;
-        }
-
-        .small {
-            font-size: 12px;
-            color: rgba(255, 255, 255, .62);
-            line-height: 1.45;
-        }
-
-        .empty {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-            padding: 30px 18px;
-            text-align: center;
-            color: rgba(255, 255, 255, .7);
-        }
-
-        .empty strong {
-            color: rgba(255, 255, 255, .92);
-        }
-
-        .char-counter {
-            align-self: flex-end;
-            font-size: 12px;
-            color: rgba(255, 255, 255, .6);
-            margin-top: 4px;
-        }
-
-        .char-counter.over {
-            color: #FF4D7D;
-            /* 초과 시(방어용) */
-        }
-
-
-        @media (max-width: 430px) {
-            h1 {
-                font-size: 20px;
-            }
-
-            .single {
-                height: min(62vh, 520px);
-            }
-
-            .name {
-                font-size: 28px;
-            }
-        }
-    </style>
+    <title>사방넷 주간회의</title>
+    <link rel="stylesheet" href="index.css">
 </head>
 
 <body>
-    <div class="app">
-        <header>
-            <div class="title-wrap">
-                <div class="badge">
-                    <span
-                        style="width:10px;height:10px;border-radius:999px;background:linear-gradient(135deg,var(--accent),var(--accent2));display:inline-block;"></span>
-                    <span id="badgeText">Loading…</span>
-                </div>
-                <h1>오늘의 MC</h1>
+    <div class="topbar">
+        <div class="topbar-inner">
+            <div class="logo">
+                <div class="logo-badge"></div>
+                <div>사방넷 주간회의 <span style="opacity:.85">· 방명록</span></div>
             </div>
 
-            <div class="actions">
-                <button id="scheduleBtn" title="스케줄 열기">📅 <span>Schedule</span></button>
-                <button id="reloadBtn" class="primary" title="새로고침">↻ <span>Reload</span></button>
+            <div class="top-actions">
+                <button class="btn" id="openScheduleBtn" type="button" title="스케줄 보기">
+                    <span class="dot"></span>
+                    스케줄
+                </button>
+                <button class="btn" id="reloadBtn" type="button" title="새로고침">
+                    ↻ Reload
+                </button>
             </div>
-        </header>
-
-        <main>
-            <div class="stage" id="stage">
-                <div class="status" id="status"></div>
-                <div class="single" id="single"></div>
-            </div>
-
-            <div class="footer">
-                <span class="muted" id="updatedText">—</span>
-            </div>
-        </main>
+        </div>
     </div>
 
-    <!-- Drawer -->
-    <div class="drawer-backdrop" id="drawerBackdrop"></div>
-    <aside class="drawer" id="drawer" aria-hidden="true">
-        <div class="drawer-head">
-            <div class="drawer-title">
-                <h2>스케줄</h2>
-                <p>항목 클릭 → 해당 일정이 “첫번째 카드”로 표시됩니다.</p>
+    <div class="wrap">
+        <div class="frame">
+            <div class="frame-head">
+                <div style="font-weight:900;letter-spacing:-.4px">TODAY’S MC</div>
             </div>
-            <button class="icon-btn" id="drawerCloseBtn" title="닫기">✕</button>
-        </div>
 
-        <div class="drawer-body">
-            <div class="search">
-                <input id="searchInput" placeholder="이름/타입으로 검색…" />
+            <div class="content">
+                <div class="card">
+                    <div class="card-h">
+                        <span class="pill">오늘의 MC</span>
+                        <div id="ownerDateChip" class="tag" style="margin-left:auto">—</div>
+                    </div>
+
+                    <div class="card-b">
+                        <div class="profile">
+                            <div class="avatar" id="avatar">?</div>
+
+                            <div class="meta">
+                                <div class="name">
+                                    <span id="ownerName">불러오는 중…</span>
+                                </div>
+
+                                <div class="sub">
+                                    <span>📌 <span id="ownerType">—</span></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="todaybox">
+                            <div class="todaybox-title">
+                                <span>💬 오늘의 명언</span>
+                            </div>
+                            <div class="todaybox-msg" id="todayMessage">
+                                “발표자에게 응원 한 줄 남기고 회의 시작해요!”
+                            </div>
+
+                            <div class="status" id="statusText">Firebase 연결 중…</div>
+                        </div>
+
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="guestbook-head">
+                        <h2>📖 방명록</h2>
+                        <div class="hint"><span class="spark"></span> Live</div>
+                    </div>
+
+                    <form class="form" id="guestbookForm">
+                        <div class="row">
+                            <div class="field">
+                                <label for="nickname">별명</label>
+                                <input id="nickname" type="text" maxlength="20" placeholder="예: 용감한 개발자" />
+                            </div>
+
+                            <div class="field">
+                                <label for="message">한 줄 메시지</label>
+                                <textarea id="message" maxlength="100"
+                                    placeholder="오늘 발표자에게 한마디 남겨주세요! (최대 100자)"></textarea>
+                                <div class="counter">
+                                    <span id="counterText">0/100</span>
+                                    <span style="opacity:.75">TIP: 칭찬/응원/질문 다 OK</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <button class="primary" id="submitBtn" type="submit" disabled>
+                            ✍️ 방명록 남기기
+                        </button>
+                    </form>
+
+                    <div class="list" id="boardList"></div>
+                </div>
             </div>
-            <div class="list" id="list"></div>
+        </div>
+    </div>
+
+    <div class="foot">
+        · Copyright © 2026 김명주. All rights reserved. <br />
+    </div>
+
+    <div class="sidebar-overlay" id="overlay"></div>
+    <aside class="sidebar" id="sidebar">
+        <div class="side-head">
+            <div class="side-title">🗓️ 전체 스케줄</div>
+            <button class="close" id="closeSidebarBtn" type="button">닫기 ✕</button>
+        </div>
+        <div class="side-body">
+            <div class="search">
+                <input id="scheduleSearch" type="text" placeholder="이름 검색" />
+            </div>
+            <div class="schedule" id="scheduleList"></div>
+            <div style="font-size:12px;color:var(--muted);line-height:1.45">
+                · 기준: <b>오늘 이후</b> 발표자만 표시<br />
+            </div>
         </div>
     </aside>
 
-    <!-- Modal -->
-    <div class="modal-backdrop" id="modalBackdrop" aria-hidden="true">
-        <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
-            <div class="modal-head">
-                <div class="modal-title">
-                    <h2 id="modalTitle">칭찬 남기기</h2>
-                    <p id="modalMeta">—</p>
-                </div>
-                <button class="icon-btn" id="modalCloseBtn" title="닫기">✕</button>
-            </div>
-            <div class="modal-body">
-                <textarea id="praiseInput" placeholder="비난을 제외한 모든 말 남겨주세요!" maxlength="50"></textarea>
-                <div class="char-counter">
-                    <span id="charCount">0</span>/50
-                </div>
-
-                <div class="modal-actions">
-                    <button id="modalCancelBtn">취소</button>
-                    <button id="modalSubmitBtn" class="primary">등록</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <script>
-        // ====== CONFIG ======
-        const API_URL = "https://script.google.com/macros/s/AKfycbxBLLMgFMP7n7Yj6nC8ZitlhpxzrwulRRtaPzX1H7j_vvn2kKxMyA6UP6NaWwWX440LLw/exec";
-
-        // ====== STATE ======
-        let items = [];     // 정렬된 전체 데이터
-        let index = 0;      // 현재 "첫번째 카드" 인덱스
-        let modalItem = null;
-
-        // ====== ELEMENTS ======
-        const badgeText = document.getElementById("badgeText");
-        const updatedText = document.getElementById("updatedText");
-        const statusEl = document.getElementById("status");
-
-        const singleEl = document.getElementById("single");
-
-        const scheduleBtn = document.getElementById("scheduleBtn");
-        const reloadBtn = document.getElementById("reloadBtn");
-
-        const drawer = document.getElementById("drawer");
-        const drawerBackdrop = document.getElementById("drawerBackdrop");
-        const drawerCloseBtn = document.getElementById("drawerCloseBtn");
-        const listEl = document.getElementById("list");
-        const searchInput = document.getElementById("searchInput");
-
-        const modalBackdrop = document.getElementById("modalBackdrop");
-        const modalCloseBtn = document.getElementById("modalCloseBtn");
-        const modalCancelBtn = document.getElementById("modalCancelBtn");
-        const modalSubmitBtn = document.getElementById("modalSubmitBtn");
-        const praiseInput = document.getElementById("praiseInput");
-        const modalTitle = document.getElementById("modalTitle");
-        const modalMeta = document.getElementById("modalMeta");
-        const charCountEl = document.getElementById("charCount");
-        const MAX_LEN = 100;
-
-        praiseInput.addEventListener("input", () => {
-            const len = praiseInput.value.length;
-            charCountEl.textContent = len;
-
-            if (len >= MAX_LEN) {
-                charCountEl.parentElement.classList.add("over");
-            } else {
-                charCountEl.parentElement.classList.remove("over");
-            }
-        });
-
-        function openPraiseModal(item) {
-            modalItem = item;
-            modalTitle.textContent = `${item.name} 님 칭찬 남기기`;
-            modalMeta.textContent = `${item.date} · ${item.type || "주간회의"}`;
-            praiseInput.value = "";
-
-            // ✅ 추가
-            charCountEl.textContent = "0";
-            charCountEl.parentElement.classList.remove("over");
-
-            modalBackdrop.classList.add("show");
-            modalBackdrop.setAttribute("aria-hidden", "false");
-            setTimeout(() => praiseInput.focus(), 50);
-        }
-
-
-
-        // ====== HELPERS ======
-        const pad2 = n => String(n).padStart(2, "0");
-
-        function nowKST() {
-            const fmt = new Intl.DateTimeFormat("en-CA", { timeZone: "Asia/Seoul", year: "numeric", month: "2-digit", day: "2-digit" });
-            const parts = fmt.formatToParts(new Date());
-            const y = parts.find(p => p.type === "year").value;
-            const m = parts.find(p => p.type === "month").value;
-            const d = parts.find(p => p.type === "day").value;
-            return `${y}-${m}-${d}`;
-        }
-
-        function showStatus(msg, ms = 1600) {
-            statusEl.textContent = msg;
-            statusEl.classList.add("show");
-            clearTimeout(showStatus._t);
-            showStatus._t = setTimeout(() => statusEl.classList.remove("show"), ms);
-        }
-
-        function parseDateKey(ymd) {
-            const [y, m, d] = ymd.split("-").map(Number);
-            return y * 10000 + m * 100 + d;
-        }
-
-        function normalizeItems(raw) {
-            const arr = Array.isArray(raw) ? raw : [];
-            return arr
-                .filter(x => x && x.date && x.name)
-                .map(x => ({
-                    date: String(x.date).trim(),
-                    name: String(x.name).trim(),
-                    type: String(x.type ?? "").trim()
-                }))
-                .sort((a, b) => parseDateKey(a.date) - parseDateKey(b.date));
-        }
-
-        function pickStartIndex(arr) {
-            const today = nowKST();
-            const tKey = parseDateKey(today);
-            let i = arr.findIndex(x => parseDateKey(x.date) >= tKey);
-            if (i < 0) i = 0;
-            return i;
-        }
-
-        function setFooter() {
-            const total = items.length;
-            const dt = new Date();
-            const fmt = new Intl.DateTimeFormat("ko-KR", { timeZone: "Asia/Seoul", hour: "2-digit", minute: "2-digit" });
-            updatedText.textContent = `업데이트 ${fmt.format(dt)}`;
-        }
-
-
-        // ====== CARD RENDER (SINGLE) ======
-        function renderSingleCard() {
-            singleEl.innerHTML = "";
-
-            if (!items.length) {
-                singleEl.innerHTML = `
-          <div class="empty">
-            <div style="font-size:40px">🫧</div>
-            <strong>표시할 MC가 없습니다.</strong>
-            <div class="small">API 응답/CORS 또는 시트 데이터를 확인해주세요.</div>
-          </div>
-        `;
-                badgeText.textContent = "No data";
-                setFooter();
-                return;
-            }
-
-            const item = items[index];
-            const today = nowKST();
-            badgeText.textContent = `${today} 기준 · 오늘의 MC: ${item.name}`;
-
-            const card = document.createElement("div");
-            card.className = "card";
-            card.innerHTML = `
-        <div class="card-header">
-          <div class="chip">${item.type || "주간회의"}</div>
-          <div class="date">${item.date}</div>
-        </div>
-        <div class="card-body">
-          <h3 class="name">${escapeHtml(item.name)}</h3>
-          <p class="type">${escapeHtml(item.type ? `오늘의 타입: ${item.type}` : "오늘의 타입: 주간회의")}</p>
-          <div class="cta">
-            <span><b>클릭</b>해서 칭찬글 남기기</span>
-            <span class="arrow">↗</span>
-          </div>
-        </div>
-      `;
-            card.addEventListener("click", () => openPraiseModal(item));
-            singleEl.appendChild(card);
-
-            setFooter();
-            renderList(); // active 표시 업데이트
-        }
-
-        function escapeHtml(s) {
-            return String(s)
-                .replaceAll("&", "&amp;")
-                .replaceAll("<", "&lt;")
-                .replaceAll(">", "&gt;")
-                .replaceAll('"', "&quot;")
-                .replaceAll("'", "&#039;");
-        }
-
-        // ====== DRAWER (SCHEDULE LIST) ======
-        function openDrawer() {
-            drawer.classList.add("show");
-            drawerBackdrop.classList.add("show");
-            drawer.setAttribute("aria-hidden", "false");
-            setTimeout(() => searchInput.focus(), 60);
-        }
-        function closeDrawer() {
-            drawer.classList.remove("show");
-            drawerBackdrop.classList.remove("show");
-            drawer.setAttribute("aria-hidden", "true");
-        }
-
-        function renderList() {
-            const q = searchInput.value.trim().toLowerCase();
-            listEl.innerHTML = "";
-
-            if (!items.length) {
-                listEl.innerHTML = `<div class="empty"><strong>스케줄이 비어있어요.</strong></div>`;
-                return;
-            }
-
-            const filtered = items
-                .map((it, i) => ({ ...it, _i: i }))
-                .filter(it => {
-                    if (!q) return true;
-                    return (it.name || "").toLowerCase().includes(q) || (it.type || "").toLowerCase().includes(q) || (it.date || "").toLowerCase().includes(q);
-                });
-
-            if (!filtered.length) {
-                listEl.innerHTML = `<div class="empty"><strong>검색 결과가 없어요.</strong><div class="small">다른 키워드로 시도해보세요.</div></div>`;
-                return;
-            }
-
-            filtered.forEach(it => {
-                const row = document.createElement("div");
-                row.className = "row" + (it._i === index ? " active" : "");
-                row.innerHTML = `
-          <div class="row-left">
-            <div class="row-top">
-              <span class="pill">${escapeHtml(it.date)}</span>
-              <span class="row-name">${escapeHtml(it.name)}</span>
-            </div>
-            <div class="row-type">${escapeHtml(it.type || "주간회의")}</div>
-          </div>
-        `;
-                listEl.appendChild(row);
-            });
-        }
-
-        // ====== MODAL ======
-        function openPraiseModal(item) {
-            modalItem = item;
-            modalTitle.textContent = `${item.name} 님 칭찬 남기기`;
-            modalMeta.textContent = `${item.date} · ${item.type || "주간회의"}`;
-            praiseInput.value = "";
-            modalBackdrop.classList.add("show");
-            modalBackdrop.setAttribute("aria-hidden", "false");
-            setTimeout(() => praiseInput.focus(), 50);
-        }
-        function closePraiseModal() {
-            modalItem = null;
-            modalBackdrop.classList.remove("show");
-            modalBackdrop.setAttribute("aria-hidden", "true");
-        }
-        async function submitPraise() {
-            const text = praiseInput.value.trim();
-            if (!modalItem) return;
-            if (!text) {
-                showStatus("칭찬글을 입력해주세요 🙂");
-                praiseInput.focus();
-                return;
-            }
-
-            // TODO: 추후 POST 연동 자리
-            // await fetch(API_URL, { method:"POST", headers:{ "Content-Type":"application/json" }, body: JSON.stringify({ action:"praise", date: modalItem.date, name: modalItem.name, type: modalItem.type, praise: text }) });
-
-            console.log("[DEMO] praise submit:", { ...modalItem, praise: text });
-            showStatus("데모: 등록 완료! (현재는 콘솔 출력만)", 1600);
-            closePraiseModal();
-        }
-
-        // ====== FETCH DATA ======
-        async function load() {
-            showStatus("불러오는 중…", 1200);
-            try {
-                const res = await fetch(API_URL, { method: "GET", cache: "no-store" });
-                if (!res.ok) throw new Error(`HTTP ${res.status}`);
-                const json = await res.json();
-                if (!json || json.ok !== true) throw new Error("API 응답 ok=false");
-
-                items = normalizeItems(json.data);
-                index = pickStartIndex(items);
-
-                renderSingleCard();
-                renderList();
-                showStatus("완료 ✅", 900);
-            } catch (err) {
-                console.error(err);
-                items = [];
-                index = 0;
-                renderSingleCard();
-                renderList();
-                showStatus("불러오기 실패: CORS 또는 API 상태를 확인해주세요", 2200);
-            }
-        }
-
-        // ====== EVENTS ======
-        reloadBtn.addEventListener("click", load);
-        scheduleBtn.addEventListener("click", openDrawer);
-
-        drawerCloseBtn.addEventListener("click", closeDrawer);
-        drawerBackdrop.addEventListener("click", closeDrawer);
-
-        searchInput.addEventListener("input", renderList);
-
-        modalCloseBtn.addEventListener("click", closePraiseModal);
-        modalCancelBtn.addEventListener("click", closePraiseModal);
-        modalSubmitBtn.addEventListener("click", submitPraise);
-        modalBackdrop.addEventListener("click", (e) => { if (e.target === modalBackdrop) closePraiseModal(); });
-
-        window.addEventListener("keydown", (e) => {
-            if (e.key === "Escape") {
-                if (modalBackdrop.classList.contains("show")) closePraiseModal();
-                else if (drawer.classList.contains("show")) closeDrawer();
-            }
-            // Drawer 열려있을 때 ↑↓로 이동 같은건 필요하면 추가 가능
-        });
-
-        // start
-        load();
-    </script>
+    <script type="module" src="index.js"></script>
 </body>
 
 </html>
