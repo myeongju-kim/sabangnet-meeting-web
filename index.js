@@ -238,6 +238,18 @@ const nickname = $('nickname');
 const message = $('message');
 const counterText = $('counterText');
 const submitBtn = $('submitBtn');
+const qnaForm = $('qnaForm');
+const qnaTo = $('qnaTo');
+const qnaContent = $('qnaContent');
+const qnaCounterText = $('qnaCounterText');
+const qnaFeedback = $('qnaFeedback');
+const qnaSubmitBtn = $('qnaSubmitBtn');
+const qnaList = $('qnaList');
+const interactionTitle = $('interactionTitle');
+const guestbookTabBtn = $('guestbookTabBtn');
+const qnaTabBtn = $('qnaTabBtn');
+const guestbookPanel = $('guestbookPanel');
+const qnaPanel = $('qnaPanel');
 
 const openScheduleBtn = $('openScheduleBtn');
 const closeSidebarBtn = $('closeSidebarBtn');
@@ -258,6 +270,20 @@ closeSidebarBtn.addEventListener('click', closeSidebar);
 overlay.addEventListener('click', closeSidebar);
 reloadBtn.addEventListener('click', () => location.reload());
 
+function switchInteractionTab(tabName) {
+    const showGuestbook = tabName !== 'qna';
+    guestbookPanel.hidden = !showGuestbook;
+    qnaPanel.hidden = showGuestbook;
+    guestbookTabBtn.classList.toggle('active', showGuestbook);
+    qnaTabBtn.classList.toggle('active', !showGuestbook);
+    guestbookTabBtn.setAttribute('aria-selected', showGuestbook ? 'true' : 'false');
+    qnaTabBtn.setAttribute('aria-selected', showGuestbook ? 'false' : 'true');
+    interactionTitle.textContent = showGuestbook ? '📖 방명록' : '❓ Q&A';
+}
+
+guestbookTabBtn.addEventListener('click', () => switchInteractionTab('guestbook'));
+qnaTabBtn.addEventListener('click', () => switchInteractionTab('qna'));
+
 function setStatus(text, isError = false) {
     statusText.classList.toggle('error', !!isError);
     statusText.textContent = text;
@@ -269,6 +295,32 @@ function updateCounter() {
     submitBtn.disabled = !(currentOwner && message.value.trim().length > 0);
 }
 message.addEventListener('input', updateCounter);
+
+function setQnaFeedback(text, isError = false) {
+    qnaFeedback.classList.toggle('error', !!isError);
+    qnaFeedback.textContent = text;
+}
+
+function canSubmitQna() {
+    const to = qnaTo.value.trim();
+    const content = qnaContent.value.trim();
+    return !!to && !!content && content.length <= 500;
+}
+
+function updateQnaCounter() {
+    const len = qnaContent.value.length;
+    qnaCounterText.textContent = `${len}/500`;
+    qnaSubmitBtn.disabled = !canSubmitQna();
+}
+
+qnaTo.addEventListener('input', () => {
+    setQnaFeedback('');
+    qnaSubmitBtn.disabled = !canSubmitQna();
+});
+qnaContent.addEventListener('input', () => {
+    setQnaFeedback('');
+    updateQnaCounter();
+});
 
 function initRandomUI() {
     nickname.value = generateNickname();
@@ -282,6 +334,7 @@ const db = getFirestore(app);
 let presentersCache = [];
 let currentOwner = null;
 let unsubscribeBoards = null;
+let unsubscribeQna = null;
 
 function renderSchedule(list) {
     const q = scheduleSearch.value.trim().toLowerCase();
@@ -323,16 +376,25 @@ function applyOwner(p) {
     avatar.textContent = initials(p?.name);
 
     if (unsubscribeBoards) unsubscribeBoards();
+    if (unsubscribeQna) unsubscribeQna();
     boardList.innerHTML = '';
+    qnaList.innerHTML = '';
 
     if (!p) {
         submitBtn.disabled = true;
+        qnaSubmitBtn.disabled = true;
+        qnaList.innerHTML = `
+    <div style="color:var(--muted);font-size:12px;padding:10px 2px">
+      오늘 이후 발표자가 없어 Q&A를 표시할 수 없어요.
+    </div>
+  `;
         setStatus('오늘 이후 발표자가 없습니다. (presenters 데이터 확인)', true);
         return;
     }
 
     setStatus('방명록 로딩 중…');
     submitBtn.disabled = message.value.trim().length === 0;
+    qnaSubmitBtn.disabled = !canSubmitQna();
 
     const boardsCol = collection(db, 'presenters', p.id, 'boards');
     const boardsQ = query(boardsCol, orderBy('createdAt', 'desc'), limit(50));
@@ -378,11 +440,66 @@ function applyOwner(p) {
             setStatus('방명록을 불러오지 못했어요. (권한/룰 확인)', true);
         },
     );
+
+    startQnaRealtime(p.id);
 }
 
 function convertType(type) {
     if (type === 'AI') return 'AI 주간회의';
     return '일반 주간회의';
+}
+
+function startQnaRealtime(presenterId) {
+    if (!presenterId) return;
+    if (unsubscribeQna) unsubscribeQna();
+
+    const qnaCol = collection(db, 'presenters', presenterId, 'qna');
+    const qnaQ = query(qnaCol, orderBy('createdAt', 'desc'), limit(100));
+
+    unsubscribeQna = onSnapshot(
+        qnaQ,
+        (snap) => {
+            const items = [];
+            snap.forEach((doc) => items.push({ id: doc.id, ...doc.data() }));
+
+            if (items.length === 0) {
+                qnaList.innerHTML = `
+    <div style="color:var(--muted);font-size:12px;padding:10px 2px">
+      아직 등록된 Q&A가 없어요. 첫 질문을 남겨주세요! ✨
+    </div>
+  `;
+                return;
+            }
+
+            qnaList.innerHTML = items
+                .map((it) => {
+                    const to = it.to?.trim() || '—';
+                    const time = formatKST(it.createdAt);
+                    const content = it.content ?? '';
+                    return `
+      <div class="entry">
+        <div class="entry-top">
+          <div class="entry-who">
+            <div class="tiny">Q</div>
+            <div class="entry-name">TO. ${escapeHtml(to)}</div>
+          </div>
+          <div class="entry-time">${escapeHtml(time || '')}</div>
+        </div>
+        <div class="entry-msg">${escapeHtml(content)}</div>
+      </div>
+    `;
+                })
+                .join('');
+        },
+        (err) => {
+            console.error(err);
+            qnaList.innerHTML = `
+  <div style="color:#b10045;font-size:12px;padding:10px 2px">
+    Q&A를 불러오지 못했어요. (권한/룰 확인)
+  </div>
+`;
+        },
+    );
 }
 
 async function loadPresenters() {
@@ -435,7 +552,53 @@ guestbookForm.addEventListener('submit', async (e) => {
     }
 });
 
+qnaForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    if (!currentOwner) return;
+
+    const to = qnaTo.value.trim().slice(0, 30);
+    const content = qnaContent.value.trim().slice(0, 500);
+
+    if (!to) {
+        setQnaFeedback('TO 항목을 입력해주세요.', true);
+        return;
+    }
+    if (!content) {
+        setQnaFeedback('콘텐츠를 입력해주세요.', true);
+        return;
+    }
+    if (content.length > 500) {
+        setQnaFeedback('콘텐츠는 500자 이하여야 합니다.', true);
+        return;
+    }
+
+    qnaSubmitBtn.disabled = true;
+    qnaSubmitBtn.textContent = '등록 중…';
+
+    try {
+        await addDoc(collection(db, 'presenters', currentOwner.id, 'qna'), {
+            to,
+            content,
+            createdAt: serverTimestamp(),
+            presenterDateKey: currentOwner.dateKey ?? null,
+        });
+
+        qnaTo.value = '';
+        qnaContent.value = '';
+        setQnaFeedback('Q&A가 등록되었습니다.');
+        updateQnaCounter();
+    } catch (err) {
+        console.error(err);
+        setQnaFeedback('Q&A 등록 실패! (Firestore rules/권한 확인)', true);
+    } finally {
+        qnaSubmitBtn.textContent = '📨 Q&A 등록';
+        qnaSubmitBtn.disabled = !canSubmitQna();
+    }
+});
+
 updateCounter();
+updateQnaCounter();
+switchInteractionTab('guestbook');
 
 try {
     await loadPresenters();

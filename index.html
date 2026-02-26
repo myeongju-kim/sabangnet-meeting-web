@@ -71,34 +71,66 @@
                 </div>
                 <div class="card">
                     <div class="guestbook-head">
-                        <h2>📖 방명록</h2>
-                        <div class="hint"><span class="spark"></span> Live</div>
+                        <h2 id="interactionTitle">📖 방명록</h2>
+                        <div class="tab-switch" role="tablist" aria-label="메시지 탭">
+                            <button id="guestbookTabBtn" class="tab-btn active" type="button" role="tab"
+                                aria-selected="true">방명록</button>
+                            <button id="qnaTabBtn" class="tab-btn" type="button" role="tab"
+                                aria-selected="false">Q&A</button>
+                        </div>
                     </div>
 
-                    <form class="form" id="guestbookForm">
-                        <div class="row">
-                            <div class="field">
-                                <label for="nickname">별명</label>
-                                <input id="nickname" type="text" maxlength="20" placeholder="예: 용감한 개발자" />
-                            </div>
+                    <section id="guestbookPanel" class="tab-panel" role="tabpanel">
+                        <form class="form" id="guestbookForm">
+                            <div class="row">
+                                <div class="field">
+                                    <label for="nickname">별명</label>
+                                    <input id="nickname" type="text" maxlength="20" placeholder="예: 용감한 개발자" />
+                                </div>
 
-                            <div class="field">
-                                <label for="message">한 줄 메시지</label>
-                                <textarea id="message" maxlength="200"
-                                    placeholder="오늘 MC에게 한마디 남겨주세요! (최대 200자)"></textarea>
-                                <div class="counter">
-                                    <span id="counterText">0/200</span>
-                                    <span style="opacity:.75">TIP: 칭찬/응원/질문 다 OK</span>
+                                <div class="field">
+                                    <label for="message">한 줄 메시지</label>
+                                    <textarea id="message" maxlength="200"
+                                        placeholder="오늘 MC에게 한마디 남겨주세요! (최대 200자)"></textarea>
+                                    <div class="counter">
+                                        <span id="counterText">0/200</span>
+                                        <span style="opacity:.75">TIP: 칭찬/응원/질문 다 OK</span>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
 
-                        <button class="primary" id="submitBtn" type="submit" disabled>
-                            ✍️ 방명록 남기기
-                        </button>
-                    </form>
+                            <button class="primary" id="submitBtn" type="submit" disabled>
+                                ✍️ 방명록 남기기
+                            </button>
+                        </form>
+                        <div class="list" id="boardList"></div>
+                    </section>
 
-                    <div class="list" id="boardList"></div>
+                    <section id="qnaPanel" class="tab-panel" role="tabpanel" hidden>
+                        <form class="form" id="qnaForm">
+                            <div class="row">
+                                <div class="field">
+                                    <label for="qnaTo">TO. 누구에게</label>
+                                    <input id="qnaTo" type="text" maxlength="30" placeholder="예: 순영, 봄" />
+                                </div>
+
+                                <div class="field">
+                                    <label for="qnaContent">콘텐츠</label>
+                                    <textarea id="qnaContent" maxlength="500"
+                                        placeholder="질문/의견/요청을 남겨주세요. (최대 500자)"></textarea>
+                                    <div class="counter">
+                                        <span id="qnaCounterText">0/500</span>
+                                        <span id="qnaFeedback" style="opacity:.75"></span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <button class="primary" id="qnaSubmitBtn" type="submit">
+                                📨 Q&A 등록
+                            </button>
+                        </form>
+                        <div class="list qna-list" id="qnaList"></div>
+                    </section>
                 </div>
             </div>
         </div>
